@@ -74,6 +74,19 @@ void loop()
 			armMotors = !armMotors;
 		}
 
+		if(Square)
+		{
+			chassis.reverseMotor(1, !chassis.getReverseValue(1));
+		}
+		if(Triangle)
+		{
+			chassis.reverseMotor(3, !chassis.getReverseValue(3));
+		}
+		if(Circle)
+		{
+			chassis.reverseMotor(2, !chassis.getReverseValue(2));
+		}
+
 		// Chassis Control
 		Vec2 vec = Vec2(ps2x.JoyStick(PSS_LX), -ps2x.JoyStick(PSS_LY));
 		chassis.drive(Vec2::angle(vec), Vec2::magnitude(vec), -ps2x.JoyStick(PSS_RX));
