@@ -35,6 +35,9 @@ void setup()
 	ps2x.config_gamepad();
 	ps2x.read_gamepad();
 	network.setPS2(ps2x);
+	chassis.reverseMotor(1, true);
+	chassis.reverseMotor(2, true);
+	
 	delay(1500);
 }
 
@@ -52,10 +55,10 @@ void loop()
 		bool L2 = ps2x.Button(PSB_L2);
 		bool R1 = ps2x.Button(PSB_R1);
 		bool R2 = ps2x.Button(PSB_R2);
-		bool Triangle = ps2x.ButtonPressed(PSB_TRIANGLE);
-		bool Square = ps2x.ButtonPressed(PSB_SQUARE);
-		bool Cross = ps2x.ButtonPressed(PSB_CROSS);
-		bool Circle = ps2x.ButtonPressed(PSB_CIRCLE);
+		bool Triangle = ps2x.Button(PSB_TRIANGLE);
+		bool Square = ps2x.Button(PSB_SQUARE);
+		bool Cross = ps2x.Button(PSB_CROSS);
+		bool Circle = ps2x.Button(PSB_CIRCLE);
 		bool PAD_Up = ps2x.Button(PSB_PAD_UP);
 		bool PAD_Down = ps2x.Button(PSB_PAD_DOWN);
 		bool R1_Pressed = ps2x.ButtonPressed(PSB_R1);
@@ -76,20 +79,21 @@ void loop()
 
 		if(Square)
 		{
-			chassis.reverseMotor(1, !chassis.getReverseValue(1));
+		chassis.drive(180, 1, ps2x.JoyStick(PSS_RX));
 		}
 		if(Triangle)
 		{
-			chassis.reverseMotor(3, !chassis.getReverseValue(3));
 		}
 		if(Circle)
 		{
-			chassis.reverseMotor(2, !chassis.getReverseValue(2));
+		chassis.drive(0, 1, ps2x.JoyStick(PSS_RX));
+		}else{
+		Vec2 vec = Vec2(ps2x.JoyStick(PSS_LX), -ps2x.JoyStick(PSS_LY));
+		chassis.drive(Vec2::angle(vec), Vec2::magnitude(vec), ps2x.JoyStick(PSS_RX));
+
 		}
 
 		// Chassis Control
-		Vec2 vec = Vec2(ps2x.JoyStick(PSS_LX), -ps2x.JoyStick(PSS_LY));
-		chassis.drive(Vec2::angle(vec), Vec2::magnitude(vec), -ps2x.JoyStick(PSS_RX));
 	}
 	PololuG2::iterate();
 	if (network.getLastPS2PacketTime() > 500 || !armMotors)
