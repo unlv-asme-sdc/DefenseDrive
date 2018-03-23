@@ -6,9 +6,9 @@
 //#include <LSMHeadless.h>
 
 // Construct Drive Chassis
-PololuG2 motorL = PololuG2(2, 9, 7, true);
+PololuG2 motorL = PololuG2(6, 9, 7, true);
 PololuG2 motorM = PololuG2(4, 10, 8, true);
-PololuG2 motorR = PololuG2(3, 5, 11, true);
+PololuG2 motorR = PololuG2(12, 5, 11, true);
 
 Ddrive chassis = Ddrive(motorL, motorR, motorM);
 
@@ -98,12 +98,12 @@ void loop()
 	PololuG2::iterate();
 	if (network.getLastPS2PacketTime() > 500 || !armMotors)
 	{
-		digitalWrite(2, LOW);
+		digitalWrite(6, LOW);
 		digitalWrite(4, LOW);
-		digitalWrite(3, LOW);
+		digitalWrite(12, LOW);
 	} else {
-		digitalWrite(2, HIGH);
+		digitalWrite(6, HIGH);
 		digitalWrite(4, HIGH);
-		digitalWrite(3, HIGH);
+		digitalWrite(12, HIGH);
 	}
 }
