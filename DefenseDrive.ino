@@ -2,15 +2,15 @@
 #include <PS2X_lib.h>
 #include <NetworkTable.h>
 #include <AStar32U4.h>
-#include <HDrive.h>
+#include <TankDrive.h>
 //#include <LSMHeadless.h>
 
 // Construct Drive Chassis
-PololuG2 motorL = PololuG2(6, 9, 7, true);
-PololuG2 motorM = PololuG2(4, 10, 8, true);
-PololuG2 motorR = PololuG2(12, 5, 11, true);
+PololuG2 motorL = PololuG2(6, 9, 7, true);// pins
+//PololuG2 motorL = PololuG2(12, 5, 11, true);//shield2
+PololuG2 motorR = PololuG2(4, 10, 8, true);//shield1
 
-HDrive chassis = HDrive(motorL, motorR, motorM);
+TankDrive chassis = TankDrive(motorL, motorR);
 
 // Network & Contoller
 PS2X ps2x;
@@ -22,6 +22,10 @@ bool armMotors = true;
 
 // Timers
 unsigned long last_update;
+
+// Reverses
+bool reverseLeft;
+bool reverseRight;
 
 void setup()
 {
@@ -35,8 +39,6 @@ void setup()
 	ps2x.config_gamepad();
 	ps2x.read_gamepad();
 	network.setPS2(ps2x);
-	chassis.reverseMotor(1, true);
-	chassis.reverseMotor(2, true);
 	
 	delay(1500);
 }
@@ -73,20 +75,13 @@ void loop()
 		bool Start_Pressed = ps2x.ButtonPressed(PSB_START);
 		// Reverse Motors Buttons
 		if(Square)
-			chassis.reverseMotor(chassis.HDRIVE_MOTOR::LEFT, !chassis.getReverseMotorValue(chassis.HDRIVE_MOTOR::LEFT));
+			chassis.reverseLeftMotors(reverseLeft = !reverseLeft);
 		if(Triangle)
-			chassis.reverseMotor(chassis.HDRIVE_MOTOR::MIDDLE, !chassis.getReverseMotorValue(chassis.HDRIVE_MOTOR::MIDDLE));
-		if(Circle)
-			chassis.reverseMotor(chassis.HDRIVE_MOTOR::RIGHT, !chassis.getReverseMotorValue(chassis.HDRIVE_MOTOR::RIGHT));
+			chassis.reverseRightMotors(reverseRight = !reverseRight);
 			
 
 		// Chassis Control
-		float strafeFactor = 0;
-		if(L1)
-			strafeFactor = 1;
-		if(R1)
-			strafeFactor = -1;
-		chassis.drive(ps2x.JoyStick(PSS_LY), -ps2x.JoyStick(PSS_RY), strafeFactor);
+		chassis.drive(ps2x);
 		// Reset Button Flags
 		ps2x.read_gamepad(); // clear release&pressed flags.
 	}
